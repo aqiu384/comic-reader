@@ -1,0 +1,115 @@
+<html>
+  <head>
+    <meta charset="utf8">
+    <title>Reader</title>
+    <link href="/comic/reader/static/css/library.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="app"><router-view></router-view></div>
+  </body>
+
+  <template id="app-home">
+    <div>
+      <h1>Reader Home</h1>
+      <ul>
+        <li><router-link to="/flip/">Flip</router-link></li>
+        <li><router-link to="/thin/">Thin</router-link></li>
+        <li><router-link to="/tank/">Tank</router-link></li>
+        <li><router-link to="/type/">Type</router-link></li>
+      </ul>
+    </div>
+  </template>
+
+  <template id="app-flipbook">
+    <div>
+      <div class="nav-bar nav-tablet">
+        <router-link to="../"><div class="nav-button">^</div></router-link>
+        <router-link :to="prevChapterUrl"><div class="nav-button">&lt;</div></router-link>
+        <router-link :to="nextChapterUrl"><div class="nav-button">&gt;</div></router-link>
+      </div>
+      <div class="flipbook-book">
+        <img
+          class="flipbook-page"
+          v-for="frame in frames"
+          v-bind:src="frame.src"
+          v-bind:style="frame.style">
+        </img>
+      </div>
+    </div>
+  </template>
+
+  <template id="app-crumbs">
+    <div class="crumb-row">
+      <div v-for="crumb in crumbUrls" class="crumb-cell">
+        <router-link :to="crumb.url">
+          <div class="crumb-link">{{ crumb.label }}</div>
+        </router-link>
+      </div>
+    </div>
+  </template>
+
+  <template id="app-gallery">
+    <div class="thumbnail-grid">
+      <div class="thumbnail-cell" v-for="img in images">
+        <div class="thumbnail-wrap">
+          <router-link :to="img.title + '/'" append>
+            <img class="thumbnail-img" :src="img.url + img.cover"></img>
+          </router-link>
+        </div>
+        <div class="thumbnail-label">
+          <router-link :to="img.title + '/'" append>{{ img.title }}</router-link>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <template id="app-library-container">
+    <div v-if="books">
+      <div class="nav-bar nav-tablet">
+        <router-link to="../"><div class="nav-button">^</div></router-link>
+      </div>
+      <app-crumbs :crumbs="titleCrumbs"></app-crumbs>
+      <app-gallery :images="books"></app-gallery>
+    </div>
+
+    <div v-else>Loading Library...</div>
+  </template>
+
+  <template id="app-book-container">
+    <div v-if="!currChapter && chapters">
+      <div class="nav-bar nav-tablet">
+        <router-link to="../"><div class="nav-button">^</div></router-link>
+      </div>
+      <app-crumbs :crumbs="titleCrumbs"></app-crumbs>
+      <app-gallery :images="chapters"></app-gallery>
+    </div>
+
+    <app-flipbook
+      v-else-if="currChapter && isFlipbook"
+      :chapter="currChapter"
+      :prev-chapter-url="prevChapterUrl"
+      :next-chapter-url="nextChapterUrl">
+    </app-flipbook>
+
+    <div v-else-if="currChapter">
+      <div class="nav-bar nav-tablet">
+        <router-link to="../"><div class="nav-button">^</div></router-link>
+        <router-link :to="prevChapterUrl"><div class="nav-button">&lt;</div></router-link>
+        <router-link :to="nextChapterUrl"><div class="nav-button">&gt;</div></router-link>
+      </div>
+      <app-crumbs :crumbs="titleCrumbs"></app-crumbs>
+      <div class="page-list" v-for="page in currChapter.pages">
+        <img class="page-img" :src="currChapter.url + page"></img>
+      </div>
+    </div>
+
+    <div v-else>Loading Book...</div>
+  </template>
+
+  <script src="/comic/reader/static/js/vue.js"></script>
+  <script src="/comic/reader/static/js/vue-router.js"></script>
+  <script src="/comic/reader/flipbook-component.js"></script>
+  <script src="/comic/reader/library-container.js"></script>
+  <script src="/comic/reader/book-container.js"></script>
+  <script src="/comic/reader/app.js"></script>
+</html>

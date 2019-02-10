@@ -1,0 +1,104 @@
+body {
+  background: black;
+  color: white;
+}
+
+a {
+  color: white;
+}
+
+.nav-bar {
+  position: fixed;
+  z-index: 999;
+}
+
+.nav-bar a {
+  text-decoration: none;
+}
+
+.nav-tablet {
+  top: 5vw;
+}
+
+.nav-button {
+  width: 5vw;
+  text-align: center;
+  background-color: red;
+  border-radius: 1vw;
+  padding: 1vw 0 1vw;
+  margin: 1vw 0 1vw;
+  opacity: 0.1;
+}
+
+.crumb-row {
+  display: flex;
+  align-self: flex-end;
+}
+
+.crumb-cell {
+  flex-grow: 1;
+  margin: auto 0.5vw 1vw;
+}
+
+.crumb-link {
+  text-align: center;
+  background-color: #222;
+  padding: 1vw 0 1vw;
+  border-radius: 1vw;
+}
+
+a.router-link-exact-active .crumb-link {
+  background-color: grey;
+}
+
+.page-list {
+  width: 100%;
+}
+
+.page-img {
+  width: 100%;
+  object-fit: contain;
+}
+
+.thumbnail-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  column-gap: 0.5vw;
+  row-gap: 0.5vw;
+}
+
+.thumbnail-cell:nth-child(odd) {
+  border-radius: 1vw;
+  background-color: #222;
+}
+
+.thumbnail-wrap {
+  height: 30vw;
+  width: 19vw;
+}
+
+.thumbnail-img {
+  height: 100%;
+  width: 100%;
+  border-radius: 1vw;
+  object-fit: cover;
+}
+
+.thumbnail-label {
+  text-align: center;
+  padding: 0.5em;
+}
+
+.flipbook-page {
+  position: absolute;
+  background-color: black;
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+}
+
+.flipbook-book {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
