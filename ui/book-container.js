@@ -46,53 +46,31 @@ function formatChapters(chapters, baseUrl) {
   return chaps
 }
 
-const CrumbComponent = {
-  template: '#app-crumbs',
-  props: {
-    crumbs: Array
-  },
-  computed: {
-    crumbUrls () {
-      return this.crumbs.map((label, i, labels) =>
-        ({ label, url: '../'.repeat(labels.length - 1 - i) })
-      )
-    }
-  }
-}
-
-const GalleryComponent = {
-  template: '#app-gallery',
-  props: {
-    images: Array
-  }
-}
-
 const BookContainer = {
   template: '#app-book-container',
   props: {
-    libraryName: String,
-    bookTitle: String,
-    chapterTitle: String
+    bookId: String,
+    chapterId: String
   },
   data () { return {
+    libraryName: 'galleries',
     apiPrefix: '/comic/browse/',
     chaptersFile: 'chapters.json',
-    chapters: null
+    chapters: null,
+    thinPages: null,
+    isFlipbook: false
   } },
   computed: {
-    isFlipbook () {
-      return this.libraryName === 'flip'
-    },
     bookPrefix () {
-      if (this.libraryName && this.bookTitle) {
-        return this.apiPrefix + this.libraryName + '/' + this.bookTitle + '/'
+      if (this.libraryName && this.bookId) {
+        return this.apiPrefix + this.libraryName + '/' + this.bookId + '/'
       }
       return null
     },
     chapterIndex () {
-      if (this.chapters && this.chapterTitle) {
+      if (this.chapters && this.chapterId) {
         for (let i = 0; i < this.chapters.length; i++) {
-          if (this.chapters[i].title === this.chapterTitle) {
+          if (this.chapters[i].title === this.chapterId) {
             return i
           }
         }
@@ -115,7 +93,7 @@ const BookContainer = {
       return ''
     },
     titleCrumbs () {
-      return ['H', this.libraryName, this.bookTitle, this.chapterTitle].filter(title => title)
+      return ['H', this.libraryName, this.bookId, this.chapterId].filter(title => title)
     }
   },
   created () {
@@ -135,14 +113,18 @@ const BookContainer = {
       if (this.bookPrefix) {
         fetch(this.bookPrefix + this.chaptersFile).then(res =>
           res.json()
-        ).then(res =>
+        ).then(res => {
+          this.thinPages = null
+          this.isFlipbook = Array.isArray(res[0])
           this.chapters = formatChapters(res, this.bookPrefix)
-        ).catch(err =>
+        }).catch(err =>
           fetch(this.bookPrefix).then(res =>
             res.json()
-          ).then(res =>
+          ).then(res => {
+            this.thinPages = res[0].type === 'file' ? res.map(x => this.bookPrefix + x.name) : null
+            this.isFlipbook = Array.isArray(res[0])
             this.chapters = formatChapters(res, this.bookPrefix)
-          ).catch(err =>
+          }).catch(err =>
             this.chapters = null
           )
         )

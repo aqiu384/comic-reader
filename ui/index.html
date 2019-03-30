@@ -1,0 +1,164 @@
+<html>
+  <head>
+    <meta charset="utf8">
+    <title>Reader</title>
+    <link href="/comic/reader/static/css/library.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="app"><router-view></router-view></div>
+  </body>
+
+  <template id="app-flipbook">
+    <div>
+      <div class="nav-bar nav-tablet">
+        <router-link to="../"><div class="nav-button">^</div></router-link>
+        <router-link :to="prevChapterUrl"><div class="nav-button">&lt;</div></router-link>
+        <router-link :to="nextChapterUrl"><div class="nav-button">&gt;</div></router-link>
+      </div>
+      <div class="flipbook-book">
+        <img
+          class="flipbook-page"
+          v-for="frame in frames"
+          v-bind:src="frame.src"
+          v-bind:style="frame.style">
+        </img>
+      </div>
+    </div>
+  </template>
+
+  <template id="app-gallery">
+    <div class="thumbnail-grid">
+      <div class="thumbnail-cell" v-for="img in images">
+        <div class="thumbnail-wrap">
+          <router-link :to="img.title + '/'" append>
+            <img class="thumbnail-img" :src="img.url + img.cover"></img>
+          </router-link>
+        </div>
+        <div class="thumbnail-label">
+          <router-link :to="img.title + '/'" append>{{ img.title }}</router-link>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <template id="app-book-container">
+    <div v-if="thinPages">
+      <div class="nav-bar nav-tablet">
+        <router-link to="../"><div class="nav-button">^</div></router-link>
+      </div>
+      <div class="page-list" v-for="page in thinPages">
+        <img class="page-img" :src="page"></img>
+      </div>
+    </div>
+
+    <div v-else-if="!currChapter && chapters">
+      <div class="nav-bar nav-tablet">
+        <router-link to="../"><div class="nav-button">^</div></router-link>
+      </div>
+      <app-gallery :images="chapters"></app-gallery>
+    </div>
+
+    <app-flipbook
+      v-else-if="currChapter && isFlipbook"
+      :chapter="currChapter"
+      :prev-chapter-url="prevChapterUrl"
+      :next-chapter-url="nextChapterUrl">
+    </app-flipbook>
+
+    <div v-else-if="currChapter">
+      <div class="nav-bar nav-tablet">
+        <router-link to="../"><div class="nav-button">^</div></router-link>
+        <router-link :to="prevChapterUrl"><div class="nav-button">&lt;</div></router-link>
+        <router-link :to="nextChapterUrl"><div class="nav-button">&gt;</div></router-link>
+      </div>
+      <div class="page-list" v-for="page in currChapter.pages">
+        <img class="page-img" :src="currChapter.url + page"></img>
+      </div>
+    </div>
+
+    <div v-else>
+      Loading Book...
+    </div>
+  </template>
+
+  <template id="app-book-search">
+    <div>
+      <form v-on:submit.prevent="onSearchBook">
+        <label>Title<input v-model="form.title"></label>
+        <label>Result Count<input type="number" v-model="form.bookCount"></label>
+        <label>Tag Count<input type="number" v-model="form.tagCount"></label>
+        <input type="submit" value="Run Gallery Search">
+
+        <div class="thumbnail-grid" v-if="rankedTags">
+          <div>
+            <label>
+              <input type="checkbox" v-model="form.downloadsOnly">
+              downloads only
+            </label>
+          </div>
+          <div v-for="cat of tagCategories">
+            <label>
+              <input type="checkbox" :value="cat" v-model="form.tagCategories">
+              {{ cat }}
+            </label>
+          </div>
+          <div v-for="tag of tags">
+            <label>
+              <input type="checkbox" :value="tag.tag" v-model="form.includedTags">
+              {{ tag.tag }} ({{ tag.count }})
+            </label>
+          </div>
+        </div>
+      </form>
+      <form v-on:submit.prevent="onSearchTag">
+        <label>
+          <input type="submit" value="+">
+          <input v-model="searchTag" placeholder="search tags">
+        </label>
+      </form>
+      <button v-on:click.prevent="onClearTags">Clear Tags</button>
+    </div>
+  </template>
+
+  <template id="app-book-list">
+    <div class="thumbnail-grid">
+      <div class="thumbnail-cell" v-for="book in books">
+        <div class="thumbnail-wrap">
+          <router-link v-if="book.location" :to="'/' + book.id + '/'">
+            <img class="thumbnail-img" :src="'/comic/browse/thumbnails/' + book.thumbnail.slice(0, 2) + '/' + book.thumbnail.slice(3) + '_250.jpg'"/>
+          </router-link>
+          <a v-else>
+            <img class="thumbnail-img" :src="'/comic/browse/thumbnails/' + book.thumbnail.slice(0, 2) + '/' + book.thumbnail.slice(3) + '_250.jpg'"/>
+          </a>
+        </div>
+        <div class="thumbnail-label">
+          {{ book.title }}
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <template id="app-library-container">
+    <div>
+      <app-book-search
+        :similar-tags="similarTags"
+        :ranked-tags="rankedTags"
+        @search-tag="searchTags"
+        @search-book="getBooksAndTagRanks"
+      ></app-book-search>
+
+      <app-book-list v-if="!bookId && books" :books="books"></app-book-list>
+      <div v-if="!bookId && !books">Loading Library...</div>
+
+      <router-view></router-view>
+    </div>
+  </template>
+
+  <script src="/comic/reader/static/js/vue.js"></script>
+  <script src="/comic/reader/static/js/vue-router.js"></script>
+  <script src="/comic/reader/flipbook-component.js"></script>
+  <script src="/comic/reader/library-container.js"></script>
+  <script src="/comic/reader/book-container.js"></script>
+  <script src="/comic/reader/book-search.js"></script>
+  <script src="/comic/reader/app.js"></script>
+</html>
