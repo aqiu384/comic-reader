@@ -1,0 +1,24 @@
+version: '3.2'
+services:
+  web:
+    image: nginx:1.13.12-alpine
+    restart: always
+    network_mode: host
+    volumes:
+    - ./static:/web/static:ro
+    - ./proxy:/etc/nginx/conf.d:ro
+    - ../netreg-vue/client/dist:/web/netreg-vue:ro
+    - ../comic-reader/writer:/web/comic-writer:ro
+    - ../comic-reader/ui:/web/comic-reader:ro
+    - ../comic-reader/data/writer:/writer-data:ro
+  api:
+    build: api
+    restart: always
+    network_mode: host
+    environment:
+      COMIC_READER_DB_FILE: /reader-data/comics.sqlite
+      TEXT_DETECTOR_PAGES_PATH: /writer-data
+    volumes:
+    - ../comic-reader/api/src:/app/src:ro
+    - ../comic-reader/data/reader:/reader-data:ro
+    - ../comic-reader/data/writer:/writer-data:rw

@@ -1,0 +1,41 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Text Detector</title>
+    <link href="/comic/writer/static/css/writer.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="app"><router-view></router-view></div>
+  </body>
+
+  <template id="app-text-detector">
+    <div>
+      <div style="position: relative;">
+        <img :src="page.src" v-on:click.prevent="addBox"/>
+        <template v-for="(box, i) in textBoxes">
+          <div class="text-box" :style="{ top: box.y, left: box.x, width: box.w, height: box.h }">
+            <div>???</div>
+          </div>
+          <div class="text-box-ctrl" :style="{ top: box.y, left: box.x + box.w }">
+            <button v-on:click.prevent="removeBoxAt(i)">X</button>
+            <button>T</button>
+          </div>
+        </template>
+      </div>
+      <button v-on:click.prevent="saveBoxes">Save Boxes</button>
+    </div>
+  </template>
+
+  <template id="app-page-container">
+    <div>
+      <app-text-detector :page="page" :default-boxes="textBoxes" @save-boxes="saveBoxes"></app-text-detector>
+      <button v-on:click.prevent="runOcr">Run Ocr</button>
+    </div>
+  </template>
+
+  <script src="/comic/writer/static/js/vue.js"></script>
+  <script src="/comic/writer/static/js/vue-router.js"></script>
+  <script src="/comic/writer/text-detector.js"></script>
+  <script src="/comic/writer/page-container.js"></script>
+  <script src="/comic/writer/app.js"></script>
+</html>

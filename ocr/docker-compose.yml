@@ -1,0 +1,16 @@
+version: '3.2'
+services:
+  app:
+    build: .
+    restart: always
+    network_mode: host
+    user: '1000:1000'
+    environment:
+      COMIC_FINDER_DEBUG: 'true'
+    command: [ "python3", "/app/src/app.py" ]
+    volumes:
+    - /etc/passwd:/etc/passwd:ro
+    - /etc/group:/etc/group:ro
+    - ./src:/app/src:ro
+    - ../data/writer:/writer-data:ro
+    - ../data/ocr:/ocr-data:rw

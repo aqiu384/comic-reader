@@ -1,0 +1,12 @@
+.text-box-ctrl {
+  position: absolute;
+}
+
+.text-box {
+  position: absolute;
+  border: solid red;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
