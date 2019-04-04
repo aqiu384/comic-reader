@@ -11,31 +11,62 @@
   <template id="app-text-detector">
     <div>
       <div style="position: relative;">
-        <img :src="page.src" v-on:click.prevent="addBox"/>
+        <img :src="showRaw ? page.src : textSrc" v-on:click.prevent="addBox"/>
+        <img v-if="hideRaw" :src="whiteSrc" v-on:click.prevent="addBox" style="position: absolute; top: 0; left: 0"/>
         <template v-for="(box, i) in textBoxes">
           <div class="text-box" :style="{ top: box.y, left: box.x, width: box.w, height: box.h }">
-            <div>???</div>
+            <div>{{ box.fin }}</div>
           </div>
           <div class="text-box-ctrl" :style="{ top: box.y, left: box.x + box.w }">
             <button v-on:click.prevent="removeBoxAt(i)">X</button>
-            <button>T</button>
+            <button>{{ i + 1 }}</button>
           </div>
         </template>
       </div>
+      <div>
+        <template v-for="(box, i) in textBoxes">
+          <form v-on:submit.prevent="reorderBox(i)">
+            <input v-model="box.newOrder" :placeholder="i + 1" style="width: 3em;">
+            <input v-model="box.raw" placeholder="RAW">
+            <input v-model="box.fin" placeholder="FIN">
+            <input type="submit" value="O">
+            <button v-on:click.prevent="removeBoxAt(i)">X</button>
+          </form>
+        </template>
+      </div>
+      <button v-on:click.prevent="showRaw = !showRaw">{{ showRaw ? 'Hide Raw' : 'Show Raw' }}</button>
+      <button v-on:click.prevent="hideRaw = !hideRaw">{{ showRaw ? 'Hide Text' : 'Show Text' }}</button>
       <button v-on:click.prevent="saveBoxes">Save Boxes</button>
+      <button v-on:click.prevent="runOcr">Run Ocr</button>
     </div>
   </template>
 
   <template id="app-page-container">
     <div>
-      <app-text-detector :page="page" :default-boxes="textBoxes" @save-boxes="saveBoxes"></app-text-detector>
-      <button v-on:click.prevent="runOcr">Run Ocr</button>
+      <app-text-detector
+        :page="page"
+        :default-boxes="textBoxes"
+        @save-boxes="saveBoxes"
+        @run-ocr="runOcr"
+      ></app-text-detector>
     </div>
   </template>
 
-  <script src="/comic/writer/static/js/vue.js"></script>
-  <script src="/comic/writer/static/js/vue-router.js"></script>
+  <template id="app-book-container">
+    <div>
+      <div>Book Container</div>
+      <router-link :to="'/' + bookId + '/' + pages[currPageInd - 1]">Prev</router-link>
+      <router-link :to="'/' + bookId + '/' + pages[currPageInd + 1]">Next</router-link>
+      <router-view></router-view>
+      <router-link :to="'/' + bookId + '/' + pages[currPageInd - 1]">Prev</router-link>
+      <router-link :to="'/' + bookId + '/' + pages[currPageInd + 1]">Next</router-link>
+    </div>
+  </template>
+
+  <script src="/static/js/vue.js"></script>
+  <script src="/static/js/vue-router.js"></script>
   <script src="/comic/writer/text-detector.js"></script>
   <script src="/comic/writer/page-container.js"></script>
+  <script src="/comic/writer/book-container.js"></script>
   <script src="/comic/writer/app.js"></script>
 </html>

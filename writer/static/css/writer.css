@@ -1,5 +1,23 @@
+@font-face {
+  font-family: 'augie';
+  src: url('/static/fonts/augie-webfont.woff2') format('woff2'),
+       url('/static/fonts/augie-webfont.woff') format('woff'),
+       url('/static/fonts/augie.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 .text-box-ctrl {
   position: absolute;
+  color: red;
+}
+
+.text-box-ctrl button {
+  display: block;
+}
+
+.text-box-ctrl input {
+  display: block;
 }
 
 .text-box {
@@ -9,4 +27,6 @@
   align-items: center;
   justify-content: center;
   text-align: center;
+  font-family: 'augie', serif;
+  font-size: 20px;
 }

@@ -14,9 +14,9 @@ def isolateText(imgfile, boxes, boxPadding=0):
     for box in boxes:
         x, y, w, h = [box[x] for x in 'xywh']
         crimg = bwimg[y:y + h, x:x + w]
-        cv2.floodFill(crimg, None, (int(w / 2), 0), 200)
-        crimg[:, 0] = 255
+        cv2.floodFill(crimg, None, (0, int(h / 2)), 200)
         crimg[:, w - 1] = 255
+        crimg[0, :] = 255
         crimg[h - 1, :] = 255
         cv2.floodFill(crimg, None, (0, 0), 0)
         cv2.floodFill(crimg, None, (0, 0), 100)
@@ -38,7 +38,8 @@ def isolateText(imgfile, boxes, boxPadding=0):
         newBoxes.append({ 'x': x, 'y': y, 'w': w, 'h': h })
 
     textOnly = np.where(fnimg, img, 255)
-    pageOnly = np.where(fnimg, 255, img)
+    pageOnly = np.where(fnimg, 255, 0)
+    pageOnly = cv2.merge((pageOnly, pageOnly, pageOnly, pageOnly))
 
     return {
       'textimg': textOnly,

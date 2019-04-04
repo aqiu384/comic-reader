@@ -14,28 +14,21 @@ def not_found(error):
 def home():
     return jsonify({ 'status': 'OCR ready' })
 
-# boxfile: Input text area list
+# boxes: Input text areas
 # imgfile: Input comic page
 # textfile: Output text-only page
 # pagefile: Output img-only page
-# newboxfile: Output text area list
 @app.route('/run-ocr', methods=['GET', 'POST'])
 def ocrPost():
     try:
         req = request.get_json()
 
-        with open(req['boxfile']) as jsonfile:
-            boxes = json.load(jsonfile)
+        result = isolateText(req['imgfile'], req['boxes'])
+        cv2.imwrite(req['textfile'], result['textimg'])
+        cv2.imwrite(req['pagefile'], result['pageimg'])
+        runOcr(req['textfile'], result['boxes'])
 
-        res = isolateText(req['imgfile'], boxes)
-        cv2.imwrite(req['textfile'], res['textimg'])
-        cv2.imwrite(req['pagefile'], res['pageimg'])
-        runOcr(req['textfile'], res['boxes'])
-
-        with open(req['newboxfile'], 'w+') as jsonfile:
-            boxes = json.dump(res['boxes'], jsonfile, indent=2, sort_keys=True, ensure_ascii=False)
-
-        return jsonify({ 'status': 'OCR finished' })
+        return jsonify({ 'boxes': result['boxes'] })
     except FileNotFoundError as e:
         return make_response(jsonify({ 'error': str(e) }), 404)
 

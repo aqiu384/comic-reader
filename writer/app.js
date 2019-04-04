@@ -3,7 +3,14 @@ const NotFoundComponent = { template: '<div>404 not found</div>' }
 Vue.component('app-text-detector', TextDetectorComponent)
 
 const routes = [
-  { path: '/', component: PageContainer, props: true },
+  {
+    path: '/:bookId',
+    component: BookContainer,
+    props: true,
+    children: [
+      { path: '/:bookId/:pageId', component: PageContainer, props: true }
+    ]
+  },
   { path: '*', component: NotFoundComponent }
 ]
 

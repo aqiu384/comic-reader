@@ -6,8 +6,22 @@ const TextDetectorComponent = {
   },
   data() { return {
     nwCorner: null,
-    textBoxes: []
+    textBoxes: [],
+    showRaw: true,
+    hideRaw: false,
   } },
+  computed: {
+    textSrc() {
+      const parts = this.page.src.split('/')
+      parts.splice(parts.length - 1, 0, 'text')
+      return parts.join('/').replace('/g/', '/w/')
+    },
+    whiteSrc() {
+      const parts = this.page.src.split('/')
+      parts.splice(parts.length - 1, 0, 'page')
+      return parts.join('/').replace('/g/', '/w/') + '.png'
+    }
+  },
   watch: {
     defaultBoxes() {
       this.textBoxes = this.defaultBoxes.slice()
@@ -34,11 +48,23 @@ const TextDetectorComponent = {
         this.nwCorner = { x, y }
       }
     },
+    reorderBox(i) {
+      const box = this.textBoxes[i]
+
+      if (box.newOrder) {
+        this.textBoxes.splice(i, 1)
+        this.textBoxes.splice(box.newOrder - 1, 0, box)
+        box.newOrder = null
+      }
+    },
     removeBoxAt(i) {
       this.textBoxes.splice(i, 1)
     },
     saveBoxes() {
       this.$emit('save-boxes', this.textBoxes.slice())
+    },
+    runOcr() {
+      this.$emit('run-ocr', this.textBoxes.slice())
     }
   }
 }

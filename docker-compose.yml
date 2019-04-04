@@ -7,18 +7,36 @@ services:
     volumes:
     - ./static:/web/static:ro
     - ./proxy:/etc/nginx/conf.d:ro
-    - ../netreg-vue/client/dist:/web/netreg-vue:ro
-    - ../comic-reader/writer:/web/comic-writer:ro
-    - ../comic-reader/ui:/web/comic-reader:ro
-    - ../comic-reader/data/writer:/writer-data:ro
+    - ../code/comic-reader/writer:/web/comic-writer:ro
+    - ../code/comic-reader/ui:/web/comic-reader:ro
+    - ./data/galleries:/galleries:ro
+    - ./data/writer:/writer-data:ro
+    - ./data/ocr:/ocr-data:ro
   api:
     build: api
     restart: always
     network_mode: host
     environment:
+      COMIC_READER_BASE_URL: /comics/reader.api
       COMIC_READER_DB_FILE: /reader-data/comics.sqlite
-      TEXT_DETECTOR_PAGES_PATH: /writer-data
+      COMIC_WRITER_BASE_URL: /comic/writer/api
+      COMIC_WRITER_IMGS_PATH: /galleries
+      COMIC_WRITER_DATA_PATH: /writer-data
+      COMIC_WRITER_OCR_URL: 'http://localhost:5000'
+      COMIC_WRITER_OCR_PATH: /ocr-data
     volumes:
-    - ../comic-reader/api/src:/app/src:ro
-    - ../comic-reader/data/reader:/reader-data:ro
-    - ../comic-reader/data/writer:/writer-data:rw
+    - ../code/comic-reader/api/src:/app/src:ro
+    - ./data/reader:/reader-data:ro
+    - ./data/writer:/writer-data:rw
+  ocr:
+    build: ocr
+    restart: always
+    network_mode: host
+    user: '1000:1000'
+    command: [ "python3", "/app/src/app.py" ]
+    volumes:
+    - /etc/passwd:/etc/passwd:ro
+    - /etc/group:/etc/group:ro
+    - ../code/comic-reader/ocr/src:/app/src:ro
+    - ./data/galleries:/galleries:ro
+    - ./data/ocr:/ocr-data:rw

@@ -1,10 +1,5 @@
 const NotFoundComponent = { template: '<div>404 not found</div>' }
 
-// const BookComponent = {
-//   template: '#app-book',
-//   props: { pages: Array }
-// }
-
 const GalleryComponent = {
   template: '#app-gallery',
   props: {
