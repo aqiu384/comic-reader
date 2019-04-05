@@ -52,12 +52,13 @@ const BookSearchComponent = {
       this.form.excludedTags = []
     },
     onSearchTag() {
-      if (this.searchTag) {
+      const searchTag = this.searchTag.trim()
+      if (searchTag) {
         this.prevForm.similarTags = this.prevForm.similarTags
           .filter(t => this.searchTagResults.indexOf(t) === -1)
           .concat(this.searchTagResults)
           .filter(t => this.form.includedTags.indexOf(t) !== -1)
-        this.$emit('search-tag', this.searchTag.slice(0, 2).replace('q', ':') + this.searchTag.slice(2))
+        this.$emit('search-tag', searchTag.slice(0, 2).replace('q', ':') + searchTag.slice(2))
         this.searchTag = ''
       }
     },

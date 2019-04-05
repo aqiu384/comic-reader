@@ -17,7 +17,7 @@ services:
     restart: always
     network_mode: host
     environment:
-      COMIC_READER_BASE_URL: /comics/reader.api
+      COMIC_READER_BASE_URL: /comics/reader/api
       COMIC_READER_DB_FILE: /reader-data/comics.sqlite
       COMIC_WRITER_BASE_URL: /comic/writer/api
       COMIC_WRITER_IMGS_PATH: /galleries

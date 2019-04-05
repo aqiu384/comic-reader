@@ -21,12 +21,12 @@ function formatChapters(chapters, baseUrl) {
       }
     }
   } else if (Array.isArray(chapters[0])) {
-    for (let i = 1; i < chapters.length; i++) {
+    for (let i = 0; i < chapters.length; i++) {
       chaps.push({
         title: `Chapter ${i}`,
-        cover: chapters[i - 1][0],
+        cover: chapters[i][0],
         url: baseUrl,
-        pages: chapters[i - 1]
+        pages: chapters[i]
       })
     }
   } else {
@@ -97,11 +97,9 @@ const BookContainer = {
     }
   },
   created () {
-    this.setPageTitle()
     this.fetchChapters()
   },
   watch: {
-    titleCrumbs () { this.setPageTitle() },
     bookPrefix () { this.fetchChapters() },
     chapterIndex () { this.fetchPages() }
   },

@@ -74,12 +74,12 @@ module.exports = function(app) {
   app.post(BASE_URL + '/books', (req, res) => {
     const body = req.body
     searchGalleries(knex, {
-	title: body.title || '',
-	includedTags: body.includedTags || [],
-	excludedTags: body.excludedTags || [],
-	downloadsOnly: body.downloadsOnly,
-	bookCount: body.bookCount || 10,
-	bookOffset: body.bookOffset || 0
+        title: body.title || '',
+        includedTags: body.includedTags || [],
+        excludedTags: body.excludedTags || [],
+        downloadsOnly: body.downloadsOnly,
+        bookCount: body.bookCount || 10,
+        bookOffset: body.bookOffset || 0
       }).then(results => {
       res.setHeader('Content-Type', 'application/json')
       res.send(results)
@@ -89,8 +89,8 @@ module.exports = function(app) {
   app.post(BASE_URL + '/tags', (req, res) => {
     const body = req.body
     searchTags(knex, {
-	tag: body.tag || '',
-	tagCount: body.tagCount || 5
+        tag: body.tag || '',
+        tagCount: body.tagCount || 5
       }).then(results => {
       res.setHeader('Content-Type', 'application/json')
       res.send(results)
@@ -100,12 +100,12 @@ module.exports = function(app) {
   app.post(BASE_URL + '/tag-ranks', (req, res) => {
     const body = req.body
     searchTagRanks(knex, {
-	title: body.title || '',
-	includedTags: body.includedTags || [],
-	excludedTags: body.excludedTags || [],
-	downloadsOnly: body.downloadsOnly,
-	tagCategories: body.tagCategories || [],
-	tagCount: body.tagCount || 5
+        title: body.title || '',
+        includedTags: body.includedTags || [],
+        excludedTags: body.excludedTags || [],
+        downloadsOnly: body.downloadsOnly,
+        tagCategories: body.tagCategories || [],
+        tagCount: body.tagCount || 5
       }).then(results => {
       res.setHeader('Content-Type', 'application/json')
       res.send(results)
