@@ -7,8 +7,9 @@ const TextDetectorComponent = {
   data() { return {
     nwCorner: null,
     textBoxes: [],
-    showRaw: true,
-    hideRaw: false,
+    showOcr: false,
+    showEdit: true,
+    fonts: ['augie', 'wword']
   } },
   computed: {
     textSrc() {
@@ -24,7 +25,16 @@ const TextDetectorComponent = {
   },
   watch: {
     defaultBoxes() {
-      this.textBoxes = this.defaultBoxes.slice()
+      this.textBoxes = this.defaultBoxes.map(box => {
+        if (!box.raw) { box.raw = '' }
+        if (!box.fin) { box.fin = '' }
+        if (!box.font) { box.font = 'augie' }
+        if (!box.fsize) { box.fsize = 20 }
+        if (!box.lrpad) { box.lrpad = 20 }
+        box.newOrder = null
+        box.showEdit = true
+        return box
+      })
     }
   },
   methods: {
@@ -41,6 +51,13 @@ const TextDetectorComponent = {
             y: Math.floor(nwCorner.y),
             w: Math.floor(x - nwCorner.x),
             h: Math.floor(y - nwCorner.y),
+            raw: '',
+            fin: '',
+            font: 'augie',
+            fsize: 20,
+            lrpad: 20,
+            newOrder: null,
+            showEdit: true,
           })
         }
         this.nwCorner = null
@@ -60,11 +77,26 @@ const TextDetectorComponent = {
     removeBoxAt(i) {
       this.textBoxes.splice(i, 1)
     },
+    toggleBoxEdit(i) {
+      const box = this.textBoxes[i]
+      box.showEdit = !box.showEdit
+      this.textBoxes.splice(i, 1, box)
+    },
     saveBoxes() {
-      this.$emit('save-boxes', this.textBoxes.slice())
+      this.$emit('save-boxes', this.textBoxes.map(b => {
+        box = Object.assign({}, b)
+        delete box.newOrder
+        delete box.showEdit
+        return box
+      }))
     },
     runOcr() {
-      this.$emit('run-ocr', this.textBoxes.slice())
+      this.$emit('run-ocr', this.textBoxes.map(b => {
+        box = Object.assign({}, b)
+        delete box.newOrder
+        delete box.showEdit
+        return box
+      }))
     }
   }
 }

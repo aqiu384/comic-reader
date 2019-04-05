@@ -18,6 +18,20 @@ const BookContainer = {
       } else {
         return -1
       }
+    },
+    prevPageUrl() {
+      if (this.pages) {
+        return `/${this.bookId}/${this.pages[this.currPageInd - 1]}`
+      } else {
+        return ''
+      }
+    },
+    nextPageUrl() {
+      if (this.pages) {
+        return `/${this.bookId}/${this.pages[this.currPageInd + 1]}`
+      } else {
+        return ''
+      }
     }
   },
   watch: {

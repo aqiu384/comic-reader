@@ -14,9 +14,9 @@ def isolateText(imgfile, boxes, boxPadding=0):
     for box in boxes:
         x, y, w, h = [box[x] for x in 'xywh']
         crimg = bwimg[y:y + h, x:x + w]
-        cv2.floodFill(crimg, None, (0, int(h / 2)), 200)
+        cv2.floodFill(crimg, None, (int(w / 2), 0), 200)
+        crimg[:, 0] = 255
         crimg[:, w - 1] = 255
-        crimg[0, :] = 255
         crimg[h - 1, :] = 255
         cv2.floodFill(crimg, None, (0, 0), 0)
         cv2.floodFill(crimg, None, (0, 0), 100)
@@ -27,15 +27,19 @@ def isolateText(imgfile, boxes, boxPadding=0):
     fnimg = cv2.erode(fnimg, np.ones((5, 5), np.uint8))
     _, bwimg = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY_INV|cv2.THRESH_OTSU)
     bwimg = np.where(fnimg, bwimg, 0)
-
     boxes = [x for x in boxes if x.get('type', 'ocr') == 'ocr']
-    newBoxes = []
 
     for box in boxes:
         x, y, w, h = [box[x] for x in 'xywh']
-        crimg = bwimg[y:y + h, x:x + w]
-        x1, y1, w1, h1 = cv2.boundingRect(cv2.findNonZero(crimg))
-        newBoxes.append({ 'x': x, 'y': y, 'w': w, 'h': h })
+        crimg = fnimg[y:y + h, x:x + w]
+        x2, y2, w2, h2 = cv2.boundingRect(cv2.findNonZero(crimg))
+        moms = cv2.moments(crimg)
+        
+        if moms['m00']:
+            x2 = x + int(moms['m10'] / moms['m00'] - int(w2 / 2))
+            y2 = y + int(moms['m01'] / moms['m00'] - int(h2 / 2))
+
+        box.update({ 'x0': x2, 'y0': y2, 'w0': w2, 'h0': h2 })
 
     textOnly = np.where(fnimg, img, 255)
     pageOnly = np.where(fnimg, 255, 0)

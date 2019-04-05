@@ -7,26 +7,41 @@
   font-style: normal;
 }
 
+body {
+  background: gray;
+}
+
+input[type="number"] {
+  width: 5em;
+}
+
 .text-box-ctrl {
   position: absolute;
-  color: red;
-}
-
-.text-box-ctrl button {
-  display: block;
-}
-
-.text-box-ctrl input {
-  display: block;
 }
 
 .text-box {
   position: absolute;
-  border: solid red;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  font-family: 'augie', serif;
-  font-size: 20px;
+  white-space: pre-line;
+}
+
+.text-box.red {
+  border: solid red;
+}
+
+.text-box.blue {
+  border: solid blue;
+  color: blue;
+}
+
+.text-box.trans {
+  border: solid transparent;
+}
+
+button.edit {
+  height: 5em;
+  width: 15em;
 }
