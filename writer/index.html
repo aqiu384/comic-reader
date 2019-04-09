@@ -16,12 +16,20 @@
         <div><button class="edit" v-on:click.prevent="saveBoxes">Save Boxes</button></div>
         <div><button class="edit" v-on:click.prevent="runOcr">Run Ocr</button></div>
       </div>
+      <form v-on:submit.prevent="saveFontOptions()">
+        <input v-model.number="fontOptions.fsize" type="number" placeholder="Font">
+        <input v-model.number="fontOptions.lrpad" type="number" placeholder="Pad">
+        <select v-model="fontOptions.font">
+          <option v-for="font in fonts">{{ font }}</option>
+        </select>
+        <input type="submit" value="Set All Fonts">
+      </form>
       <div style="position: relative; display: inline-block" id="targetMe">
-        <img :src="showOcr ? textSrc : page.src" v-on:click.prevent="addBox"/>
+        <img :src="page.src" v-on:click.prevent="addBox"/>
         <div v-if="nwCorner" :style="{ color: 'red', position: 'absolute', top: nwCorner.y, left: nwCorner.x }">X</div>
-        <img v-if="!showEdit" :src="whiteSrc" style="position: absolute; top: 0; left: 0"/>
+        <img v-if="!showOcr" :src="whiteSrc" style="position: absolute; top: 0; left: 0"/>
         <template v-for="(box, i) in textBoxes">
-          <div v-if="box.y0" :class="['text-box', showEdit ? 'blue' : 'trans']" :style="{ top: box.y0, left: box.x0, width: box.w0, height: box.h0, 'font-size': box.fsize }">
+          <div v-if="box.y0" :class="['text-box', showEdit ? 'blue' : 'trans']" :style="{ top: box.y0 + box.dy, left: box.x0 + box.dx, width: box.w0, height: box.h0, 'font-size': box.fsize }">
             <div :style="{ 'padding-left': box.lrpad, 'padding-right': box.lrpad, 'font-family': box.font }">{{ box.fin }}</div>
           </div>
           <div :style="{ display: showEdit ? 'inline' : 'none' }">
@@ -32,18 +40,20 @@
             </div>
             <div class="text-box-ctrl" v-if="box.showEdit" :style="{ top: box.y + box.h, left: box.x, 'z-index': 100 }">
               <div>
-                <input v-model="box.newOrder" type="number" :placeholder="i + 1">
+                <input v-model.number="box.newOrder" type="number" :placeholder="i + 1">
                 <button v-on:click.prevent="reorderBox(i)">O</button>
+                <input v-model.number="box.dx" type="number" placeholder="x-off">
+                <input v-model.number="box.dy" type="number" placeholder="y-off">
               </div>
               <div>
-                <input v-model="box.fsize" type="number" placeholder="Font">
-                <input v-model="box.lrpad" type="number" placeholder="Pad">
+                <input v-model.number="box.fsize" type="number" placeholder="Font">
+                <input v-model.number="box.lrpad" type="number" placeholder="Pad">
                 <select v-model="box.font">
                   <option v-for="font in fonts">{{ font }}</option>
                 </select>
               </div>
-              <div><input v-model="box.raw" placeholder="RAW"></div>
-              <div><textarea style="width: 20em; height: 5em"v-model="box.fin" placeholder="FIN"></textarea></div>
+              <div><input v-model.trim="box.raw" placeholder="RAW"></div>
+              <div><textarea style="width: 20em; height: 5em"v-model.trim="box.fin" placeholder="FIN"></textarea></div>
             </div>
           </div>
         </template>

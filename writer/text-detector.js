@@ -7,9 +7,14 @@ const TextDetectorComponent = {
   data() { return {
     nwCorner: null,
     textBoxes: [],
-    showOcr: false,
+    showOcr: true,
     showEdit: true,
-    fonts: ['augie', 'wword']
+    fonts: ['augie', 'wword'],
+    fontOptions: {
+      font: null,
+      fsize: null,
+      lrpad: null
+    }
   } },
   computed: {
     textSrc() {
@@ -26,6 +31,8 @@ const TextDetectorComponent = {
   watch: {
     defaultBoxes() {
       this.textBoxes = this.defaultBoxes.map(box => {
+        if (!box.dx) { box.dx = 0 }
+        if (!box.dy) { box.dy = 0 }
         if (!box.raw) { box.raw = '' }
         if (!box.fin) { box.fin = '' }
         if (!box.font) { box.font = 'augie' }
@@ -51,6 +58,8 @@ const TextDetectorComponent = {
             y: Math.floor(nwCorner.y),
             w: Math.floor(x - nwCorner.x),
             h: Math.floor(y - nwCorner.y),
+            dx: 0,
+            dy: 0,
             raw: '',
             fin: '',
             font: 'augie',
@@ -81,6 +90,16 @@ const TextDetectorComponent = {
       const box = this.textBoxes[i]
       box.showEdit = !box.showEdit
       this.textBoxes.splice(i, 1, box)
+    },
+    saveFontOptions() {
+      for (const [k, v] of Object.entries(this.fontOptions)) {
+        if (v !== null) {
+          this.fontOptions[k] = null
+          for (const box of this.textBoxes) {
+            box[k] = v
+          }
+        }
+      }
     },
     saveBoxes() {
       this.$emit('save-boxes', this.textBoxes.map(b => {
